@@ -1,0 +1,80 @@
+name: CI
+
+on: [push]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16.16]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node (16.16.0)
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install node modules
+        run: npm ci
+      
+      - name: Run linter
+        run: npm run lint
+      
+      - name: Run TS checking
+        run: npm run ts
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/rc')
+    runs-on: ubuntu-latest
+    needs: lint
+    strategy:
+      matrix:
+        node-version: [16.16]
+    env:
+      OAUTH_TOKEN: ${{ secrets.OAUTH_TOKEN }}
+      ORG_ID: ${{ secrets.ORG_ID }}
+      RELEASE_TAG: ${{ github.ref_name }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node (16.16.0)
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install fetch module
+        run: npm install cross-fetch
+
+      - name: Update task (in tracker)
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const updateTask = require('./.github/scripts/updateTask.js')
+            await updateTask({ github, context, core, exec })
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      
+      - name: Build docker image
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          tags: lyaplyap/shri-infra-hw:${{ github.ref_name }}
+
+      - name: Add comment to the task
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const addComment = require('./.github/scripts/addComment.js')
+            await addComment()

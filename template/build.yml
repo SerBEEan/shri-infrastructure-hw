@@ -1,0 +1,25 @@
+name: Release build
+
+on:
+  push:
+    tags:
+      - 'rc-*.*.*'
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16.16]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - uses: actions/github-script@v6
+        id: set-result
+        with:
+          script: return "Hello!"
+          result-encoding: string
+      - name: Get result
+        run: echo '${{ steps.set-result.outputs.result }}'
