@@ -60,7 +60,7 @@ module.exports = async ({ github, context, core, exec }) => {
             // Getting information about release date and author
             console.log('Getting information about release date and author');
 
-            const releaseDate = new Date(payload.head_commit.timestamp);
+            const releaseDate = Date.now();
             const USDate = new Intl.DateTimeFormat('en-US');
             let summary = `Релиз №${currentRelease.slice(3)} от ${USDate.format(releaseDate)}`;
             
