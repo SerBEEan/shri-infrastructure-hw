@@ -2,7 +2,7 @@ const fetch = require('cross-fetch');
 
 module.exports = async ({ github, context, core, exec }) => {
     try {
-        const { OAUTH_TOKEN, ORG_ID } = process.env;
+        const { OAUTH_TOKEN, ORG_ID, TASK_ID } = process.env;
         const { payload } = context;
 
         // Listen and save the output of the git commands
@@ -79,7 +79,7 @@ module.exports = async ({ github, context, core, exec }) => {
             // Updating task in tracker
             console.log('Updating task in tracker');
 
-            await fetch('https://api.tracker.yandex.net/v2/issues/INFRA-82', {
+            await fetch(`https://api.tracker.yandex.net/v2/issues/${TASK_ID}`, {
                 method: 'PATCH',
                 body: JSON.stringify(data),
                 headers: {

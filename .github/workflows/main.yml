@@ -38,6 +38,7 @@ jobs:
     env:
       OAUTH_TOKEN: ${{ secrets.OAUTH_TOKEN }}
       ORG_ID: ${{ secrets.ORG_ID }}
+      TASK_ID: ${{ secrets.TASK_ID }}
       RELEASE_TAG: ${{ github.ref_name }}
     steps:
       - name: Checkout repository

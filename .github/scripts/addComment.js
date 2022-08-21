@@ -2,7 +2,7 @@ const fetch = require('cross-fetch');
 
 module.exports = async () => {
     try {
-        const { OAUTH_TOKEN, ORG_ID, RELEASE_TAG } = process.env;
+        const { OAUTH_TOKEN, ORG_ID, RELEASE_TAG, TASK_ID } = process.env;
 
         // Comment content
         console.log('Comment content:');
@@ -13,7 +13,7 @@ module.exports = async () => {
         // Add comment to the task
         console.log('Add comment about docker build to the task');
 
-        await fetch('https://api.tracker.yandex.net/v2/issues/INFRA-82/comments', {
+        await fetch(`https://api.tracker.yandex.net/v2/issues/${TASK_ID}/comments`, {
             method: 'POST',
             body: JSON.stringify(data),
             headers: {
