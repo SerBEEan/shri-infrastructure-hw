@@ -66,7 +66,8 @@ module.exports = async ({ github, context, core, exec }) => {
             
             const releaseAuthor = payload.head_commit.committer.name;
             let description = `Ответственный за релиз: ${releaseAuthor}\n`;
-            description += '\nКоммиты, попавшие в релиз:\n'; 
+            description += '---\n'
+            description += 'Коммиты, попавшие в релиз:\n'; 
             description += myOutput.replaceAll('"', '');
 
             // Release content
